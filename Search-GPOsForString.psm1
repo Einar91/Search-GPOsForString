@@ -24,7 +24,6 @@ function Search-GPOsForString {
 BEGIN {
     #Load GrouPolicy module
     Import-Module GroupPolicy -ErrorAction Stop
-    $Result = @()
 }
 
 PROCESS {
@@ -36,17 +35,16 @@ PROCESS {
     foreach($gpo in $AllGPOsInDomain){
         $Report = Get-GPOReport -GUID $gpo.id -ReportType Xml
         if($Report -match $String){
-            $Result += New-Object psobject -Property (@{Status="Match Found";
-                                                        PolicyName=$gpo.DisplayName})
+            $Result_Prop = @{'Status'="Match Found"
+                            'PolicyName'=$gpo.DisplayName}
+            New-Object psobject -Property $Result_Prop
             Write-Verbose "****** Match found in: $($gpo.DisplayName) ******"
         } else {
             Write-Verbose "No match in: $($gpo.DisplayName)"
         } # Else
 
     } #Foreach
-
-    $Result | Select-Object Status,PolicyName
-}
+} #Process
 
 
 END {
